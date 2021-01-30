@@ -19,31 +19,23 @@ def index():
 	if request.method == 'POST':
 		ticker = request.form['title']
 		ticker = ticker.upper()
-		print(ticker)
 		df = data.DataReader(ticker, 'yahoo', start_date, end_date)
 		df = df[['Close']] 
-		#print(df.tail())
-		forecast_out = 30 #'n=30' days
-		#Create another column (the target ) shifted 'n' units up
+		forecast_out = 30
 		df['Prediction'] = df[['Close']].shift(-forecast_out)
-		# create independent data set x and convert to numpy
 		X = np.array(df.drop(['Prediction'],1))
-		#Remove the last '30' rows
 		X = X[:-forecast_out]
-		#Create dependent data set and convert to numoy array
 		Y=np.array(df['Prediction'])
 		Y=Y[:-forecast_out]
 		x_train, x_test, y_train, y_test = train_test_split(X,Y, test_size=.2)
 		lr = LinearRegression()
 		lr.fit(x_train,y_train)
-		#testing the model 
-		lr_confidence = lr.score(x_test,y_test)
+		lr_confidence = lr.score(x_test, y_test)
 		print("lr confidence = ", lr_confidence)
-		#set forcast = tp last 30 rows of the original adj close
 		x_forecast = np.array(df.drop(['Prediction'],1))[-forecast_out:]
-		lr_prediction = lr.predict(x_forecast )
-		print(lr_prediction[0])
-		return render_template('index.html',stock = lr_prediction[0])
+		lr_prediction = lr.predict(x_forecast)
+		
+		return render_template('index.html',stock = lr_prediction)
 	else:
 		return render_template('index.html')
 
