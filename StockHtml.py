@@ -13,6 +13,7 @@ end_date = today.strftime("%Y-%m-%d")
 
 app = Flask(__name__)
 #button =0
+
 @app.route('/', methods=('GET', 'POST'))
 def index():
 	if request.method == 'POST':
@@ -42,7 +43,9 @@ def index():
 		x_forecast = np.array(df.drop(['Prediction'],1))[-forecast_out:]
 		lr_prediction = lr.predict(x_forecast )
 		print(lr_prediction[0])
-	return render_template('index.html',stock = lr_prediction[0])
+		return render_template('index.html',stock = lr_prediction[0])
+	else:
+		return render_template('index.html')
 
 
 app.run("0.0.0.0" , debug=True)
